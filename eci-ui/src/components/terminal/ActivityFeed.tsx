@@ -6,9 +6,11 @@ import type { FeedItem } from '../../types'
 export default function ActivityFeed({
   feed,
   partyColorFn,
+  flex = 0.85,
 }: {
   feed: FeedItem[]
   partyColorFn: (code: string) => string
+  flex?: number
 }) {
   const [activityFilter, setActivityFilter] = useState('ALL')
 
@@ -24,10 +26,10 @@ export default function ActivityFeed({
   return (
     <Panel
       title="ACTIVITY"
-      flex={0.85}
+      flex={flex}
       headerRight={
         <div style={{ display: 'flex', gap: 4 }}>
-          {['ALL', 'MAJOR', 'METRIC'].map((s) => (
+          {['ALL', 'MAJOR', 'ROUND', 'SQUEEZE', 'FLIP'].map((s) => (
             <button
               key={s}
               onClick={() => setActivityFilter(s)}

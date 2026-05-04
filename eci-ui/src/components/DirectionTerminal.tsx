@@ -6,6 +6,7 @@ import Banner from './terminal/Banner'
 import PartiesTable from './terminal/PartiesTable'
 import ConstituenciesTable from './terminal/ConstituenciesTable'
 import ActivityFeed from './terminal/ActivityFeed'
+import ConstituencyInspector from './terminal/ConstituencyInspector'
 import Ticker from './terminal/Ticker'
 
 export default function TerminalDirection({ data }: { data: AppData }) {
@@ -14,6 +15,7 @@ export default function TerminalDirection({ data }: { data: AppData }) {
   )
 
   const [selectedParty, setSelectedParty] = useState(parties[0]?.code || 'TVK')
+  const [selectedAc, setSelectedAc] = useState<number | null>(null)
 
   const totalCounted = parties.reduce((s, p) => s + p.won + p.leading, 0)
   const flipsToday = data.feed.filter((f) => f.kind === 'FLIP').length
@@ -28,6 +30,8 @@ export default function TerminalDirection({ data }: { data: AppData }) {
     (c) => c.party === selectedParty,
   )
   const selectedPartyInfo = parties.find((p) => p.code === selectedParty)
+  const inspectedConstituency =
+    data.constituencies.find((c) => c.id === selectedAc) || null
 
   return (
     <div
@@ -68,9 +72,24 @@ export default function TerminalDirection({ data }: { data: AppData }) {
           constituencies={selectedConstituencies}
           partyInfo={selectedPartyInfo}
           partyColorFn={partyColorFn}
+          selectedAc={selectedAc}
+          onSelectAc={setSelectedAc}
         />
 
-        <ActivityFeed feed={data.feed} partyColorFn={partyColorFn} />
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 0.9,
+            gap: 8,
+          }}
+        >
+          <ActivityFeed feed={data.feed} partyColorFn={partyColorFn} flex={1} />
+          <ConstituencyInspector
+            constituency={inspectedConstituency}
+            partyColorFn={partyColorFn}
+          />
+        </div>
       </div>
 
       <Ticker feed={data.feed} partyColorFn={partyColorFn} />

@@ -7,10 +7,14 @@ export default function ConstituenciesTable({
   constituencies,
   partyInfo,
   partyColorFn,
+  selectedAc,
+  onSelectAc,
 }: {
   constituencies: Constituency[]
   partyInfo?: Party
   partyColorFn: (code: string) => string
+  selectedAc: number | null
+  onSelectAc: (id: number) => void
 }) {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [sortKey, setSortKey] = useState<keyof Constituency>('margin')
@@ -107,13 +111,25 @@ export default function ConstituenciesTable({
               >
                 ROUND {arrow('round')}
               </th>
+              <th
+                style={th('pointer')}
+                onClick={() => handleSort('runnerUpParty')}
+              >
+                RUNNER-UP {arrow('runnerUpParty')}
+              </th>
             </tr>
           </thead>
           <tbody>
             {sortedConstituencies.map((c) => (
               <tr
                 key={c.id}
-                style={{ borderBottom: `1px solid ${TermColors.border}` }}
+                onClick={() => onSelectAc(c.id)}
+                style={{
+                  borderBottom: `1px solid ${TermColors.border}`,
+                  background:
+                    selectedAc === c.id ? TermColors.panelHi : 'transparent',
+                  cursor: 'pointer',
+                }}
               >
                 <td style={{ ...td(TermColors.dim), width: 42 }}>{c.id}</td>
                 <td style={td()}>
@@ -190,6 +206,9 @@ export default function ConstituenciesTable({
                       {c.round || 0}/{c.total || 0}
                     </span>
                   </div>
+                </td>
+                <td style={td(partyColorFn(c.runnerUpParty))}>
+                  {c.runnerUpParty !== 'NONE' ? c.runnerUpParty : '-'}
                 </td>
               </tr>
             ))}

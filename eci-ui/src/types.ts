@@ -7,6 +7,15 @@ export interface Party {
   short: string
 }
 
+export interface Candidate {
+  pos: number
+  name: string
+  party: string
+  votes: number
+  margin_to_leader: number
+  status: string
+}
+
 export interface Constituency {
   id: number
   name: string
@@ -18,6 +27,9 @@ export interface Constituency {
   total: number
   status: string
   flip: boolean
+  runnerUpParty: string
+  runnerUpCandidate: string
+  candidates: Candidate[]
 }
 
 export interface FeedItem {

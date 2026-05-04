@@ -50,22 +50,27 @@ export default function App() {
 
         const constituencies: Constituency[] = Object.entries(
           json.const_data || {},
-        ).map(([name, detail]: any, idx) => {
+        ).map(([name, detail]: any) => {
           const partyMeta = getPartyMeta(detail.party)
-          const rounds = detail.status.includes('/')
-            ? detail.status.split('/')
-            : [0, 0]
+          const runnerUpMeta = getPartyMeta(detail.runner_up_party || 'NONE')
+
           return {
-            id: idx + 1,
-            name: name,
+            id: detail.id,
+            name: detail.name || name,
             party: partyMeta.code,
             candidate: detail.candidate,
-            votes: parseInt(detail.votes.replace(/,/g, '')) || 0,
-            margin: parseInt(detail.margin.replace(/,/g, '')) || 0,
-            round: parseInt(rounds[0]) || 0,
-            total: parseInt(rounds[1]) || 0,
+            votes: parseInt(String(detail.votes).replace(/,/g, '')) || 0,
+            margin: parseInt(String(detail.margin).replace(/,/g, '')) || 0,
+            round: parseInt(detail.round) || 0,
+            total: parseInt(detail.total) || 0,
             status: detail.type,
             flip: false,
+            runnerUpParty: runnerUpMeta.code,
+            runnerUpCandidate: detail.runner_up_candidate || 'None',
+            candidates: (detail.candidates || []).map((c: any) => ({
+              ...c,
+              party: getPartyMeta(c.party).code,
+            })),
           }
         })
 
