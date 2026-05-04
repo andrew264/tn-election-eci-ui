@@ -83,8 +83,12 @@ async def fetch_constituency(session: AsyncSession, ac_id: int):
     title_tag = soup.select_one(".page-title h2 span")
     if not title_tag:
       return None
-    ac_text = title_tag.get_text(strip=True).split("(")[0].strip()
-    ac_name = " - ".join(ac_text.split("-")[1:]).strip() if "-" in ac_text else ac_text
+    full_text = title_tag.get_text(strip=True)
+    full_text = re.sub(r'\s*\([Tt]amil\s*[Nn]adu\)\s*$', '', full_text, flags=re.IGNORECASE)
+    if "-" in full_text:
+      ac_name = full_text.split("-", 1)[1].strip()
+    else:
+      ac_name = full_text
 
     # Extract Rounds
     round_tag = soup.select_one(".round-status")
@@ -162,8 +166,9 @@ async def fetch_constituency(session: AsyncSession, ac_id: int):
 # --- Continuous Processing Engine ---
 
 def process_single_const_diff(n):
+  c_id = n["id"]
   c_name = n["name"]
-  o = state.const_data.get(c_name)
+  o = state.const_data.get(c_id)
 
   if not o:
     add_log("NEW", f"{c_name} reported: {n['party']} leading.")
@@ -210,9 +215,9 @@ async def polling_loop(session: AsyncSession):
 
     # 3. Process diffs ONLY once all new data is fetched
     for res in results:
-      if isinstance(res, dict) and "name" in res:
+      if isinstance(res, dict) and "id" in res:
         process_single_const_diff(res)
-        state.const_data[res["name"]] = res
+        state.const_data[res["id"]] = res
 
     # 4. Wait out the remaining time up to 30 seconds
     elapsed = asyncio.get_event_loop().time() - start_time

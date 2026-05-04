@@ -111,12 +111,6 @@ export default function ConstituenciesTable({
               >
                 ROUND {arrow('round')}
               </th>
-              <th
-                style={th('pointer')}
-                onClick={() => handleSort('runnerUpParty')}
-              >
-                RUNNER-UP {arrow('runnerUpParty')}
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -206,9 +200,6 @@ export default function ConstituenciesTable({
                       {c.round || 0}/{c.total || 0}
                     </span>
                   </div>
-                </td>
-                <td style={td(partyColorFn(c.runnerUpParty))}>
-                  {c.runnerUpParty !== 'NONE' ? c.runnerUpParty : '-'}
                 </td>
               </tr>
             ))}
